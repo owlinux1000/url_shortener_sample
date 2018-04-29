@@ -24,12 +24,10 @@ post '/' do
     return r
   end
 
-  # TODO1: 重複検査
-  # TODO2: 期間設定
-  
   random_string = SecureRandom.urlsafe_base64(8)
-  $redis.set(random_string, url)
 
+  $redis.sadd(random_string, url)
+  $redis.sadd(random_string, Time.now + 60*60*24*3)
   return "http://localhost:4567/" + random_string
   
 end
@@ -37,10 +35,15 @@ end
 get '/:random_string' do
 
   random_string = params[:random_string]
-  r = $redis.get(random_string)
+  r = $redis.smembers(random_string)
   
-  if r.nil?
+  if r[1].nil?
     return "Invalid url"
+  end
+  
+  if (r[0] - Time.now <= 0)
+    $redis.del(random_string)
+    return "Expired"
   end
   
   redirect to($redis.get(random_string))
