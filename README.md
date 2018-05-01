@@ -19,4 +19,4 @@ $ npm run dev
 
 ## 3. Access to http://localhost:8080
 
-![UI](https://imgur.com/a/IIdWq4r)
+![UI](https://imgur.com/download/LhaTVBb)
